@@ -59,7 +59,8 @@ set {
 set {
   CXXFLAGS
   -std=c++17
-  if { contains {${CC} clang}
+  if { contains {${CXX} clang}
+    # https://github.com/abseil/abseil-cpp/issues/1747  
     -fclang-abi-compat=17
   }
   if { prefix { ${BUILD_TYPE} Debug } 
