@@ -66,31 +66,31 @@
 #include <vector>
 
 #include "grpc_c_helpers.h"
-#include <protoc-c/c_helpers.h>
+#include <protoc-gen-c/c_helpers.h>
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 namespace grpc_c {
-
 std::string StripProto(const std::string &filename) {
-  return c::StripSuffixString(filename, ".proto");
+  return protobuf_c::StripSuffixString(filename, ".proto");
 }
 
 std::string FullNameToGrpcC(const std::string &full_name) {
   std::vector<std::string> pieces;
-  c::SplitStringUsing(full_name, ".", &pieces);
+  protobuf_c::SplitStringUsing(full_name, ".", &pieces);
   std::string rv = "";
   for (unsigned i = 0; i < pieces.size(); i++) {
-    if (pieces[i] == "")
+    if (pieces[i] == "") {
       continue;
-    if (rv != "")
+    }
+    if (rv != "") {
       rv += "__";
+    }
     rv += pieces[i];
   }
   return rv;
 }
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf

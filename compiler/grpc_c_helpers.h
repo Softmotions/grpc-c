@@ -74,16 +74,13 @@ namespace google {
 namespace protobuf {
 namespace compiler {
 namespace grpc_c {
-
 // Strips ".proto
 std::string StripProto(const std::string &filename);
 
 // Convert to Grpc C
 std::string FullNameToGrpcC(const std::string &full_name);
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf
-
 } // namespace google
 #endif // GRPC_C_INTERNAL_COMPILER_C_HELPERS_H

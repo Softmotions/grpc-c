@@ -70,28 +70,26 @@ namespace google {
 namespace protobuf {
 namespace compiler {
 namespace grpc_c {
-
 // CodeGenerator implementation which generates a C++ source file and
 // header.  If you create your own protocol compiler binary and you want
 // it to support C++ output, you can do so by registering an instance of this
 // CodeGenerator with the CommandLineInterface in your main() function.
-class LIBPROTOC_EXPORT GrpcCGenerator : public CodeGenerator {
+class LIBPROTOC_EXPORT GrpcCGenerator :public CodeGenerator {
 public:
-  GrpcCGenerator();
-  ~GrpcCGenerator();
+GrpcCGenerator();
+~GrpcCGenerator();
 
-  GrpcCGenerator(const GrpcCGenerator &) = delete;
-  GrpcCGenerator &operator=(const GrpcCGenerator &) = delete;
+GrpcCGenerator(const GrpcCGenerator &) = delete;
+GrpcCGenerator &operator=(const GrpcCGenerator &) = delete;
 
-  // implements CodeGenerator ----------------------------------------
-  bool Generate(const FileDescriptor *file, const std::string &parameter,
-                GeneratorContext *generator_context,
-                std::string *error) const override;
+// implements CodeGenerator ----------------------------------------
+bool Generate(
+  const FileDescriptor *file, const std::string &parameter,
+  GeneratorContext *generator_context,
+  std::string *error) const override;
 };
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf
-
 } // namespace google
 #endif // GRPC_C_INTERNAL_COMPILER_C_GENERATOR_H

@@ -66,8 +66,8 @@
 #include <string>
 
 #include <google/protobuf/stubs/common.h>
-#include <protoc-c/c_field.h>
-#include <protoc-c/c_message.h>
+#include <protoc-gen-c/c_field.h>
+#include <protoc-gen-c/c_message.h>
 
 namespace google {
 namespace protobuf {
@@ -79,51 +79,50 @@ class Printer; // printer.h
 namespace protobuf {
 namespace compiler {
 namespace grpc_c {
-
 class MessagePackUnpackGenerator {
 public:
-  // See generator.cc for the meaning of dllexport_decl.
-  explicit MessagePackUnpackGenerator(const Descriptor *descriptor,
-                                      const std::string &dllexport_decl);
-  ~MessagePackUnpackGenerator();
+// See generator.cc for the meaning of dllexport_decl.
+explicit MessagePackUnpackGenerator(
+  const Descriptor  *descriptor,
+  const std::string &dllexport_decl);
+~MessagePackUnpackGenerator();
 
-  // Header stuff.
+// Header stuff.
 
-  // Generate standard helper functions declarations for this message.
-  void GenerateHelperFunctionDeclarations(io::Printer *printer);
+// Generate standard helper functions declarations for this message.
+void GenerateHelperFunctionDeclarations(io::Printer *printer);
 
-  // Source file stuff.
+// Source file stuff.
 
-  // Generate code that initializes the global variable storing the message's
-  // descriptor.
-  void GenerateHelperFunctionDefinitions(io::Printer *printer);
+// Generate code that initializes the global variable storing the message's
+// descriptor.
+void GenerateHelperFunctionDefinitions(io::Printer *printer);
 
 private:
-  std::string GetDefaultValueC(const FieldDescriptor *fd);
+std::string GetDefaultValueC(const FieldDescriptor *fd);
 
-  const Descriptor *descriptor_;
-  std::string dllexport_decl_;
+const Descriptor *descriptor_;
+std::string dllexport_decl_;
 };
 
 class GrpcCMessageGenerator {
 public:
-  explicit GrpcCMessageGenerator(const Descriptor *descriptor,
-                                 const std::string &dllexport_decl);
+explicit GrpcCMessageGenerator(
+  const Descriptor  *descriptor,
+  const std::string &dllexport_decl);
 
-  ~GrpcCMessageGenerator();
+~GrpcCMessageGenerator();
 
-  void GenerateStructTypedef(io::Printer *printer);
+void GenerateStructTypedef(io::Printer *printer);
 
 private:
-  const Descriptor *descriptor_;
-  std::string dllexport_decl_;
-  std::unique_ptr<std::unique_ptr<GrpcCMessageGenerator>[]>
-      grpc_c_nested_generators_;
+const Descriptor *descriptor_;
+std::string dllexport_decl_;
+std::unique_ptr<std::unique_ptr<GrpcCMessageGenerator>[]>
+grpc_c_nested_generators_;
 };
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf
-
 } // namespace google
 #endif // GRPC_C_INTERNAL_COMPILER_C_MESSAGE_H

@@ -1,0 +1,78 @@
+option { PROTOBUF_C_URL protobuf-c Project sources URL }
+if { !defined { PROTOBUF_C_URL } 
+  set { PROTOBUF_C_URL https://github.com/protobuf-c/protobuf-c/archive/refs/heads/master.zip }
+}
+
+check {
+  fetch_resource.sh { ${PROTOBUF_C_URL} C{extern_protobuf_c} PROTOBUF_C_DIR }
+}
+
+if { !library { LIBPROTOC libprotoc.so }
+  error { Library libprotoc ${LIBPROTOC} not found }
+}
+
+set {
+  CXXFLAGS
+  ..${CXXFLAGS}
+  ..@@{ ${PKGCONF} --cflags protobuf libprotobuf-c }
+  -I CC{protobuf-c} 
+  -I C{extern_protobuf_c}
+  -I C{extern_protobuf_c/protobuf-c}
+  -I C{extern_protobuf_c/protoc-gen-c}
+}
+
+set {
+  LDFLAGS
+  ..${LDFLAGS}
+  ..@@{ ${PKGCONF} --libs libprotobuf-c protobuf }
+  -lprotoc
+}
+
+run {
+  exec { protoc --cpp_out CC{protobuf-c} --proto_path C{extern_protobuf_c/protobuf-c} C{extern_protobuf_c/protobuf-c/protobuf-c.proto} }
+  produces {
+    CC{protobuf-c/protobuf-c.pb.cc}
+  }
+}
+
+set {
+  SOURCES
+  CC{protobuf-c/protobuf-c.pb.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_bytes_field.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_enum.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_enum_field.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_extension.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_field.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_file.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_generator.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_helpers.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_message.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_message_field.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_primitive_field.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_service.cc}
+  C{extern_protobuf_c/protoc-gen-c/c_string_field.cc}
+  grpc_c_file.cc
+  grpc_c_generator.cc
+  grpc_c_helpers.cc
+  grpc_c_message.cc
+  grpc_c_service.cc
+  main.cc
+}
+
+cxx {
+  ${SOURCES}
+  ${CXXFLAGS}
+}
+
+
+run {
+  exec { ${CXX} -o protoc-gen-grpc-c ${CXX_OBJS} ${LDFLAGS} }
+  consumes {
+    ${CXX_OBJS}
+  }
+}
+install {
+  ${INSTALL_BIN_DIR}
+  protoc-gen-grpc-c
+}
+

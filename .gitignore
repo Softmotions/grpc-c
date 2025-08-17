@@ -7,3 +7,6 @@ log/*
 *.tar.gz
 publish/*
 vcpkg_installed/*
+compile_commands.json
+autark-cache/
+.cache/

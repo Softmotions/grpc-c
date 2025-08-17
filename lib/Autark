@@ -1,0 +1,117 @@
+
+set {
+  CFLAGS
+  ..${CFLAGS}
+  @@{ ${PKGCONF} --cflags protobuf gpr grpc libprotobuf-c }
+  -I SS{include}
+}
+
+set {
+  LDFLAGS
+  ..${LDFLAGS}
+  @@{ ${PKGCONF} --libs protobuf gpr grpc libprotobuf-c }
+}
+
+set {
+  SOURCES
+  src/client.c
+  src/context.c
+  src/init.c
+  src/memory.c
+  src/metadata_array.c
+  src/service.c
+  src/stream_ops.c
+  src/thread_pool.c
+  src/trace.c
+}
+
+cc {
+  ${SOURCES}
+  ${CFLAGS}
+}
+
+set {
+  LIBGRPCC_A
+  CC {libgrpc-c.a}
+}
+
+run {
+  exec { ${AR} rcs ${LIBGRPCC_A} ${CC_OBJS} }
+  consumes {
+    ${CC_OBJS}
+  }
+}
+
+if { ${GRPCC_BUILD_SHARED_LIBS} 
+  if {!defined {SYSTEM_DARWIN}
+    set {
+      LIBGRPCC_SO_BASE
+      libgrpc-c.so
+    }
+    set {
+      LIBGRPCC_SO_BIN
+      ^{${LIBGRPCC_SO_BASE} . ${META_VERSION}}
+    }
+    set {
+      LIBGRPCC_SO_NAME
+      ^{${LIBGRPCC_SO_BASE} . ${META_VERSION_MAJOR}}
+    }
+    run {
+      exec { ${CC} -shared -o ${LIBGRPCC_SO_BIN}  ${CC_OBJS} }
+      if { ${STRIP_CMD} 
+        exec { ${STRIP_CMD} ${LIBGRPCC_SO_BIN} }
+      }
+      consumes {
+        ${CC_OBJS}
+      }
+      produces {
+        ${LIBGRPCC_SO_BIN}
+      }
+    }
+  } else {
+    set {
+      LIBGRPCC_SO_BASE
+      libgrpc-c.dylib
+    }
+    set {
+      LIBGRPCC_SO_BIN
+      ^{libgrpc-c. ${META_VERSION} .dylib}
+    }
+    set {
+      LIBGRPCC_SO_NAME
+      ^{libgrpc-c. ${META_VERSION_MAJOR} .dylib}
+    }
+    run {
+      exec { ${CC} -dynamiclib  
+        -install_name ^{@rpath/ ${LIBGRPCC_SO_BASE}} 
+        -compatibility_version ${META_VERSION_MAJOR}
+        -current_version ${META_VERSION}
+        -o ${LIBGRPCC_SO_BIN} 
+        ${CC_OBJS} 
+      }
+      if { ${STRIP_CMD} 
+        exec { ${STRIP_CMD} ${LIBGRPCC_SO_BIN} }
+      }
+      consumes {
+        ${CC_OBJS}
+      }
+      produces {
+        ${LIBGRPCC_SO_BIN}
+      }
+    }
+  }
+
+  run {
+    exec { ln -sf ${LIBGRPCC_SO_BIN} ${LIBGRPCC_SO_NAME} }
+    exec { ln -sf ${LIBGRPCC_SO_BIN} ${LIBGRPCC_SO_BASE} }
+    consumes {
+      ${LIBGRPCC_SO_BIN}
+    }
+  }
+
+  install { ${INSTALL_LIB_DIR} ${LIBGRPCC_SO_BIN} ${LIBGRPCC_SO_BASE} ${LIBGRPCC_SO_NAME} }
+  install { ${INSTALL_INCLUDE_DIR} include/grpc-c.h }
+}
+
+
+

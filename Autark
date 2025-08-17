@@ -1,0 +1,74 @@
+meta {
+  name { grpc-c }
+  version_major { 1 }
+  version_minor { 0 }
+}
+
+option { GRPCC_BUILD_SHARED_LIBS   Build shared libraries }
+
+set {
+  META_VERSION
+  ^{ ${META_VERSION_MAJOR} . ${META_VERSION_MINOR} }
+}
+
+check {
+  system.sh
+  test_pthread.sh
+}
+
+if { !defined { PTHREAD_LFLAG} 
+  error { No pthreads found! }
+}
+
+set {
+  COMMIT_ID
+  @{ git rev-parse --short HEAD }
+}
+
+set {
+  COMMIT_DATE
+  @{ git log -1 --format=%cd --date=format:'%y-%m-%d %h:%m:%s' } 
+}
+
+if { eq { ${BUILD_TYPE} Release }
+  set {
+    STRIP_CMD strip --strip-debug
+  }
+}
+
+set {
+  CFLAGS
+  -std=gnu11
+  -fPIC
+  -fpermissive
+
+  if { prefix { ${BUILD_TYPE} Debug } 
+    -O0
+    -g
+  } else {
+    -O3
+  }
+  if { defined { SYSTEM_LINUX }
+    -DLINUX
+  }
+  if { defined { SYSTEM_DARWIN } 
+    -DDARWIN
+  }
+}
+
+set {
+  CXXFLAGS
+  -std=c++17
+  if { contains {${CC} clang}
+    -fclang-abi-compat=17
+  }
+  if { prefix { ${BUILD_TYPE} Debug } 
+    -O0
+    -g
+  } else {
+    -O3
+  }
+}
+
+include { lib/Autark }
+include { compiler/Autark }

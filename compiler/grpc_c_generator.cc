@@ -59,8 +59,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "grpc_c_generator.h"
-#include <protoc-c/c_file.h>
-#include <protoc-c/c_helpers.h>
+#include <protoc-gen-c/c_file.h>
+#include <protoc-gen-c/c_helpers.h>
 
 #include <utility>
 #include <vector>
@@ -76,13 +76,13 @@ namespace google {
 namespace protobuf {
 namespace compiler {
 namespace grpc_c {
-
 // Parses a set of comma-delimited name/value pairs, e.g.:
 //   "foo=bar,baz,qux=corge"
 // parses to the pairs:
 //   ("foo", "bar"), ("baz", ""), ("qux", "corge")
-void ParseOptions(const std::string &text,
-                  std::vector<std::pair<std::string, std::string>> *output) {
+void ParseOptions(
+  const std::string                                 &text,
+  std::vector<std::pair<std::string, std::string> > *output) {
   std::vector<std::string> parts;
   c::SplitStringUsing(text, ",", &parts);
 
@@ -100,14 +100,18 @@ void ParseOptions(const std::string &text,
   }
 }
 
-GrpcCGenerator::GrpcCGenerator() {}
-GrpcCGenerator::~GrpcCGenerator() {}
+GrpcCGenerator::GrpcCGenerator() {
+}
 
-bool GrpcCGenerator::Generate(const FileDescriptor *file,
-                              const std::string &parameter,
-                              GeneratorContext *generator_context,
-                              std::string *error) const {
-  std::vector<std::pair<std::string, std::string>> options;
+GrpcCGenerator::~GrpcCGenerator() {
+}
+
+bool GrpcCGenerator::Generate(
+  const FileDescriptor *file,
+  const std::string    &parameter,
+  GeneratorContext     *generator_context,
+  std::string          *error) const {
+  std::vector<std::pair<std::string, std::string> > options;
   ParseOptions(parameter, &options);
 
   // -----------------------------------------------------------------
@@ -150,7 +154,7 @@ bool GrpcCGenerator::Generate(const FileDescriptor *file,
   // Generate header.
   {
     std::unique_ptr<io::ZeroCopyOutputStream> output(
-        generator_context->Open(basename + ".grpc-c.h"));
+      generator_context->Open(basename + ".grpc-c.h"));
     io::Printer printer(output.get(), '$');
     file_generator.GenerateHeader(&printer);
   }
@@ -158,7 +162,7 @@ bool GrpcCGenerator::Generate(const FileDescriptor *file,
   // Generate cc file.
   {
     std::unique_ptr<io::ZeroCopyOutputStream> output(
-        generator_context->Open(basename + ".grpc-c.c"));
+      generator_context->Open(basename + ".grpc-c.c"));
     io::Printer printer(output.get(), '$');
     file_generator.GenerateSource(&printer);
   }
@@ -166,14 +170,13 @@ bool GrpcCGenerator::Generate(const FileDescriptor *file,
   // Generate service cc file.
   {
     std::unique_ptr<io::ZeroCopyOutputStream> output(
-        generator_context->Open(basename + ".grpc-c.service.c"));
+      generator_context->Open(basename + ".grpc-c.service.c"));
     io::Printer printer(output.get(), '$');
     file_generator.GenerateServiceSource(&printer);
   }
 
   return true;
 }
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf

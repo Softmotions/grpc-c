@@ -64,11 +64,19 @@
 #define GRPC_C_INTERNAL_COMPILER_C_FILE_H
 
 #include <google/protobuf/stubs/common.h>
-#include <protoc-c/c_field.h>
+#include <protoc-gen-c/c_field.h>
 #include <string>
 #include <vector>
 
 #include "grpc_c_service.h"
+
+namespace protobuf_c {
+class MessageGenerator;
+class EnumGenerator;
+class ExtensionGenerator;
+}
+
+namespace c = protobuf_c;
 
 namespace google {
 namespace protobuf {
@@ -80,46 +88,40 @@ class Printer; // printer.h
 
 namespace protobuf {
 namespace compiler {
-namespace c {
-class MessageGenerator;
-class EnumGenerator;
-class ExtensionGenerator;
-} // namespace c
 namespace grpc_c {
 class GrpcCMessageGenerator;
 class MessagePackUnpackGenerator;
 
 class FileGenerator {
 public:
-  // See generator.cc for the meaning of dllexport_decl.
-  explicit FileGenerator(const FileDescriptor *file,
-                         const std::string &dllexport_decl);
-  ~FileGenerator();
+// See generator.cc for the meaning of dllexport_decl.
+explicit FileGenerator(
+  const FileDescriptor *file,
+  const std::string    &dllexport_decl);
+~FileGenerator();
 
-  void GenerateHeader(io::Printer *printer);
-  void GenerateSource(io::Printer *printer);
-  void GenerateServiceSource(io::Printer *printer);
+void GenerateHeader(io::Printer *printer);
+void GenerateSource(io::Printer *printer);
+void GenerateServiceSource(io::Printer *printer);
 
 private:
-  const FileDescriptor *file_;
+const FileDescriptor *file_;
 
-  std::unique_ptr<std::unique_ptr<c::MessageGenerator>[]> message_generators_;
-  std::unique_ptr<std::unique_ptr<GrpcCMessageGenerator>[]>
-      grpc_c_message_generators_;
-  std::unique_ptr<std::unique_ptr<MessagePackUnpackGenerator>[]>
-      message_pack_unpack_generators_;
-  std::unique_ptr<std::unique_ptr<c::EnumGenerator>[]> enum_generators_;
-  std::unique_ptr<std::unique_ptr<GrpcCServiceGenerator>[]> service_generators_;
-  std::unique_ptr<std::unique_ptr<c::ExtensionGenerator>[]>
-      extension_generators_;
+std::unique_ptr<std::unique_ptr<c::MessageGenerator>[]> message_generators_;
+std::unique_ptr<std::unique_ptr<GrpcCMessageGenerator>[]>
+grpc_c_message_generators_;
+std::unique_ptr<std::unique_ptr<MessagePackUnpackGenerator>[]>
+message_pack_unpack_generators_;
+std::unique_ptr<std::unique_ptr<c::EnumGenerator>[]> enum_generators_;
+std::unique_ptr<std::unique_ptr<GrpcCServiceGenerator>[]> service_generators_;
+std::unique_ptr<std::unique_ptr<c::ExtensionGenerator>[]>
+extension_generators_;
 
-  // E.g. if the package is foo.bar, package_parts_ is {"foo", "bar"}.
-  std::vector<std::string> package_parts_;
+// E.g. if the package is foo.bar, package_parts_ is {"foo", "bar"}.
+std::vector<std::string> package_parts_;
 };
-
 } // namespace grpc_c
 } // namespace compiler
 } // namespace protobuf
-
 } // namespace google
 #endif // GRPC_C_INTERNAL_COMPILER_C_FILE_H
