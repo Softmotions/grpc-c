@@ -64,13 +64,16 @@ cxx {
   ${CXXFLAGS}
 }
 
-
 run {
   exec { ${CXX} -o protoc-gen-grpc-c ${CXX_OBJS} ${LDFLAGS} }
+  if { ${STRIP_CMD} 
+    exec { ${STRIP_CMD} protoc-gen-grpc-c }
+  }
   consumes {
     ${CXX_OBJS}
   }
 }
+
 install {
   ${INSTALL_BIN_DIR}
   protoc-gen-grpc-c

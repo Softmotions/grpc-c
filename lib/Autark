@@ -109,6 +109,7 @@ if { ${GRPCC_BUILD_SHARED_LIBS}
     }
   }
 
+  install { ${INSTALL_LIB_DIR} ${LIBGRPCC_A} }
   install { ${INSTALL_LIB_DIR} ${LIBGRPCC_SO_BIN} ${LIBGRPCC_SO_BASE} ${LIBGRPCC_SO_NAME} }
   install { ${INSTALL_INCLUDE_DIR} include/grpc-c.h }
 }
