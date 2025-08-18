@@ -1,6 +1,6 @@
 option { PROTOBUF_C_URL protobuf-c Project sources URL }
 if { !defined { PROTOBUF_C_URL } 
-  set { PROTOBUF_C_URL https://github.com/protobuf-c/protobuf-c/archive/refs/heads/master.zip }
+  set { PROTOBUF_C_URL https://github.com/protobuf-c/protobuf-c/archive/4719fdd7760624388c2c5b9d6759eb6a47490626.zip }
 }
 
 check {
